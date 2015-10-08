@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        jar="C:\Users\Ahmed\Desktop\ParseApp\app\build\intermediates\exploded-aar\com.facebook.android\facebook-android-sdk\4.7.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="5bdb38b7e4b6094891648c1dc4dc08589b460f97">
+        <dex dex="C:\Users\Ahmed\Desktop\ParseApp\app\build\intermediates\pre-dexed\debug\classes-46c65b66de9a9fb0d8fa1891918f61837165d2a0.jar" />
+    </item>
+    <item
+        jar="C:\Users\Ahmed\Desktop\ParseApp\app\build\intermediates\exploded-aar\ParseApp\lib\unspecified\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="e124946c45037c6c4dc4ba970caa57d1c662236c">
+        <dex dex="C:\Users\Ahmed\Desktop\ParseApp\app\build\intermediates\pre-dexed\debug\classes-1afb53ef4e696626d75bef29dbfb8a3400c93d54.jar" />
+    </item>
+
+</items>

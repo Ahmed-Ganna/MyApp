@@ -13,7 +13,7 @@ public class ParseConstants {
     public static final String IMAGE_COLUMN ="image";
 
     // user_joke table constants
-    public static final String JOKES_LIKES_CLASS ="user_joke";
+    public static final String JOKE_USER_CLASS ="user_joke";
     public static final String USER_POINTER ="user";
     public static final String JOKE_POINTER ="joke";
     public static final String INTERACTION_COLUMN = "interaction";

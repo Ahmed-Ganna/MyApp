@@ -7,11 +7,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
-import com.facebook.AccessToken;
-import com.facebook.GraphRequest;
-import com.facebook.GraphResponse;
 import com.ganna.faceparse.Constants.FBConstants;
 import com.ganna.faceparse.R;
+import com.ganna.faceparse.callbacks.requestscallbacks.UserDetailsCallback;
 import com.ganna.faceparse.ui.joke.JokeScreen;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
@@ -19,18 +17,21 @@ import com.parse.ParseFacebookUtils;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 
 public class LoginScreen extends AppCompatActivity  {
-      private Button mBtnFb;
+    private Button mBtnFb;
+    private LoginControl controller;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         initLogin();
+        init();
+    }
+
+    private void init() {
+        controller = new LoginControl();
         mBtnFb = (Button) findViewById(R.id.btn_fb_login);
         mBtnFb.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -41,36 +42,21 @@ public class LoginScreen extends AppCompatActivity  {
     }
 
     private void saveNewUserToParse() {
-
-        GraphRequest request = GraphRequest.newMeRequest( AccessToken.getCurrentAccessToken(),
-                new GraphRequest.GraphJSONObjectCallback() {
+        controller.getUserDetails(new UserDetailsCallback() {
+            @Override
+            public void onCompleted(String name, String email) {
+                ParseUser user = ParseUser.getCurrentUser();
+                user.setUsername(name);
+                user.setEmail(email);
+                user.saveInBackground(new SaveCallback() {
                     @Override
-                    public void onCompleted(JSONObject object,GraphResponse response) {
-                        String email ="";
-                        try {
-                            String name = response.getJSONObject().getString("name");
-                            if (response.getJSONObject().getString("email")!=null) {
-                                email = response.getJSONObject().getString("email");
-                            }
-                            ParseUser user = ParseUser.getCurrentUser();
-                            user.setUsername(name);
-                            user.setEmail(email);
-                            user.saveInBackground(new SaveCallback() {
-                                @Override
-                                public void done(ParseException e) {
-                                    startActivity(new Intent(LoginScreen.this, JokeScreen.class));
-                                    finish();
-                                }
-                            });
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
+                    public void done(ParseException e) {
+                        startActivity(new Intent(LoginScreen.this, JokeScreen.class));
+                        finish();
                     }
                 });
-        Bundle parameters = new Bundle();
-        parameters.putString("fields", "id,name,email");
-        request.setParameters(parameters);
-        request.executeAsync();
+            }
+        });
     }
 
     @Override

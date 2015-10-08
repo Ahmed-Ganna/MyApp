@@ -15,7 +15,7 @@ public class IgnoredRequest {
     }
 
     public void makeIgnoredRequest(ParseUser user,FindCallback<ParseObject> callback){
-        ParseQuery<ParseObject> query =new ParseQuery<>(ParseConstants.JOKES_LIKES_CLASS);
+        ParseQuery<ParseObject> query =new ParseQuery<>(ParseConstants.JOKE_USER_CLASS);
         query.whereEqualTo(ParseConstants.USER_POINTER, user);
         query.findInBackground(callback);
     }

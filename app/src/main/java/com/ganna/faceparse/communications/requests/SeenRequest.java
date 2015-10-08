@@ -14,7 +14,7 @@ public class SeenRequest {
     }
 
     public void makeSeenRequest(ParseUser user,Joke joke){
-        final ParseObject object = new ParseObject(ParseConstants.JOKES_LIKES_CLASS);
+        final ParseObject object = new ParseObject(ParseConstants.JOKE_USER_CLASS);
         object.put(ParseConstants.USER_POINTER, user);
         object.put(ParseConstants.JOKE_POINTER, joke);
         object.put(ParseConstants.INTERACTION_COLUMN, 0);

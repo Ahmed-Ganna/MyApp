@@ -22,6 +22,7 @@ public class AppController extends Application {
     public void onCreate() {
         super.onCreate();
 
+        // register our custom parse object to Parse
         ParseObject.registerSubclass(Joke.class);
         Parse.initialize(this, APPLICATION_ID, CLIENT_KEY);
         FacebookSdk.sdkInitialize(getApplicationContext());

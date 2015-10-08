@@ -55,6 +55,7 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
         setContentView(R.layout.activity_jokes);
         init();
         if (user!=null){
+            // get new Joke at first time app launch
             getIgnoredJokes();
         }else {
             startActivity(new Intent(this, LoginScreen.class));
@@ -64,6 +65,7 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
 
     }
 
+    // get jokes excluded from search
     private void getIgnoredJokes() {
         controller.getIgnoredJokes(user, new IgnoredJokesCallback() {
             @Override
@@ -74,13 +76,13 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
         });
     }
 
+
     private void getNewJoke() {
         controller.getNewJoke(ignoredIds, new GetCallback<Joke>() {
             @Override
             public void done(Joke joke, ParseException e) {
                 if (e == null) {
                     ignoredIds.add(joke.getObjectId());
-                    setJokeSeen();
                     if (jokes.size()==0) {
                         setNewJoke(joke);
                     }else {
@@ -101,7 +103,9 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
         setLikesAndDislikes();
         setBtnsAttr();
         setIndicatorText();
+        setJokeSeen();
     }
+
 
     private void setJokeSeen() {
         controller.setJokeSeen(user, curJoke);
@@ -190,6 +194,7 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
         });
     }
 
+    // Request friends permission from user
     private void requestFriendsPermission() {
         ParseFacebookUtils.linkWithReadPermissionsInBackground(user, this, Arrays.asList(FBConstants.permissions.get(2)), new SaveCallback() {
             @Override
@@ -203,6 +208,7 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
         });
     }
 
+    // App request
     private void shareJokeByFb() {
         GameRequestContent content = new GameRequestContent.Builder()
                 .setMessage("see this joke")
@@ -211,6 +217,7 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
         requestDialog.show(content);
     }
 
+    // like - dislikle
     private void interactWithJoke(boolean isLike) {
         if (isLike) {
             curJoke.setStatus(1);
@@ -228,6 +235,7 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
         });
     }
 
+    // on Swipe Top - Bottom
     @Override
     public void onRefresh(SwipyRefreshLayoutDirection direction) {
         int curIndex = jokes.indexOf(curJoke);
@@ -256,6 +264,7 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
         setExistingJoke(lastJoke);
     }
 
+    // navigate to existing joke [last - next]
     private void setExistingJoke(Joke joke) {
         curJoke=joke;
         Picasso.with(this)
@@ -267,6 +276,7 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
         swipyRefreshLayout.setRefreshing(false);
     }
 
+    // handling receiving App request
     @Override
     protected void onResume() {
         super.onResume();
@@ -302,6 +312,7 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
         });
     }
 
+    // delete App request after consumed
     private void deleteFriendRequest(String requestId) {
         controller.deleteRequest(AccessToken.getCurrentAccessToken(), requestId, new DeleteCallback() {
             @Override
@@ -320,6 +331,7 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
         indicator.setText(""+curIndex+"/"+jokes.size());
     }
 
+    // handling facebook- Activity life cycle
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

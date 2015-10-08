@@ -16,7 +16,7 @@ public class LikeRequest {
     }
 
     public void makeLikeRequest(ParseUser user,Joke joke, final SaveCallback callback){
-        final ParseObject object = new ParseObject(ParseConstants.JOKES_LIKES_CLASS);
+        final ParseObject object = new ParseObject(ParseConstants.JOKE_USER_CLASS);
         object.put(ParseConstants.USER_POINTER, user);
         object.put(ParseConstants.JOKE_POINTER, joke);
         object.put(ParseConstants.INTERACTION_COLUMN, 1);

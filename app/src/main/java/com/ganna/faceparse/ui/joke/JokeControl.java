@@ -33,6 +33,7 @@ import java.util.List;
 /**
  * Created by Ahmed on 01/10/2015.
  */
+// handle relation between ui and requests
 public class JokeControl {
 
     private IgnoredRequest ignoredJokesRequest;

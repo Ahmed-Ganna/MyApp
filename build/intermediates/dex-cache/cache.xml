@@ -2,18 +2,11 @@
 <items version="2" >
 
     <item
-        jar="C:\Users\Ahmed\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\22.2.1\support-annotations-22.2.1.jar"
+        jar="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\exploded-aar\com.facebook.android\facebook-android-sdk\4.7.0\jars\classes.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="61a0ff5c29295ec56d7e0bd3d25d95dbf71b4b2b">
-        <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\support-annotations-22.2.1-cce34395d55eb8e131db44b02bf06b0b999e14d2.jar" />
-    </item>
-    <item
-        jar="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\libs\okio-1.6.0.jar"
-        jumboMode="false"
-        revision="22.0.1"
-        sha1="98476622f10715998eacf9240d6b479f12c66143">
-        <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\okio-1.6.0-e3455856e60fb62ac7575320bf53a4d92c1652f4.jar" />
+        sha1="5bdb38b7e4b6094891648c1dc4dc08589b460f97">
+        <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\classes-f8012e977723a6a7a53a1e27fafa97e02500d841.jar" />
     </item>
     <item
         jar="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\libs\picasso-2.5.2.jar"
@@ -23,18 +16,39 @@
         <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\picasso-2.5.2-b096366d5366985f06f49b1258025cb77d1645c6.jar" />
     </item>
     <item
-        jar="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\libs\Parse-1.10.1.jar"
-        jumboMode="false"
-        revision="22.0.1"
-        sha1="181b435832725bec96c11ff568bdfbccdacab944">
-        <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\Parse-1.10.1-1d4546d299556c9893e3da72cb0455f662c74215.jar" />
-    </item>
-    <item
         jar="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\exploded-aar\ParseApp\lib\unspecified\jars\classes.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="7537830eaedc41c8238e84e8025b50a53f9ed313">
+        sha1="fbb5316b236165bf5d966f3483db998b4d7249d7">
         <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\classes-b74024d5eb2b2881e17dd0941b76a21535956ab7.jar" />
+    </item>
+    <item
+        jar="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\22.2.0\jars\classes.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="73753982da6bde518f3a4c6b372749981d14d1a0">
+        <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\classes-14bd1bbb3bdf1ced44189f504090e41192cd14de.jar" />
+    </item>
+    <item
+        jar="C:\Users\Ahmed\AppData\Local\Android\sdk\extras\android\m2repository\com\android\support\support-annotations\22.2.1\support-annotations-22.2.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="61a0ff5c29295ec56d7e0bd3d25d95dbf71b4b2b">
+        <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\support-annotations-22.2.1-cce34395d55eb8e131db44b02bf06b0b999e14d2.jar" />
+    </item>
+    <item
+        jar="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.1\jars\libs\internal_impl-22.2.1.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="c471eaaba13ff64f6e0383d1c30a9cdc9a97efeb">
+        <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\internal_impl-22.2.1-d7dd5fb6061e7219fa0e6fa2c7f9a3b92613ed8c.jar" />
+    </item>
+    <item
+        jar="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\libs\okhttp-2.5.0.jar"
+        jumboMode="false"
+        revision="22.0.1"
+        sha1="4de2b4ed3445c37ec1720a7d214712e845a24636">
+        <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\okhttp-2.5.0-612a32bfd552b90d2c547d2707ec9733a75bb519.jar" />
     </item>
     <item
         jar="C:\Users\Ahmed\.gradle\caches\modules-2\files-2.1\com.parse.bolts\bolts-android\1.2.0\6ee2953ccf51ce72b6d548c30c4633b99eb4f9dd\bolts-android-1.2.0.jar"
@@ -51,18 +65,11 @@
         <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\classes-d20a92dae8ba378386c0ea1de07d387b28a11a55.jar" />
     </item>
     <item
-        jar="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\exploded-aar\com.android.support\support-v4\22.2.1\jars\libs\internal_impl-22.2.1.jar"
+        jar="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\libs\okio-1.6.0.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="c471eaaba13ff64f6e0383d1c30a9cdc9a97efeb">
-        <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\internal_impl-22.2.1-d7dd5fb6061e7219fa0e6fa2c7f9a3b92613ed8c.jar" />
-    </item>
-    <item
-        jar="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\exploded-aar\com.facebook.android\facebook-android-sdk\4.7.0\jars\classes.jar"
-        jumboMode="false"
-        revision="22.0.1"
-        sha1="5bdb38b7e4b6094891648c1dc4dc08589b460f97">
-        <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\classes-f8012e977723a6a7a53a1e27fafa97e02500d841.jar" />
+        sha1="98476622f10715998eacf9240d6b479f12c66143">
+        <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\okio-1.6.0-e3455856e60fb62ac7575320bf53a4d92c1652f4.jar" />
     </item>
     <item
         jar="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\libs\ParseFacebookUtilsV4-1.10.1.jar"
@@ -72,18 +79,11 @@
         <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\ParseFacebookUtilsV4-1.10.1-8542a1c0af8627281bbaa1a2fbc76d765b58ad48.jar" />
     </item>
     <item
-        jar="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\libs\okhttp-2.5.0.jar"
+        jar="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\libs\Parse-1.10.1.jar"
         jumboMode="false"
         revision="22.0.1"
-        sha1="4de2b4ed3445c37ec1720a7d214712e845a24636">
-        <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\okhttp-2.5.0-612a32bfd552b90d2c547d2707ec9733a75bb519.jar" />
-    </item>
-    <item
-        jar="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\exploded-aar\com.android.support\appcompat-v7\22.2.0\jars\classes.jar"
-        jumboMode="false"
-        revision="22.0.1"
-        sha1="73753982da6bde518f3a4c6b372749981d14d1a0">
-        <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\classes-14bd1bbb3bdf1ced44189f504090e41192cd14de.jar" />
+        sha1="181b435832725bec96c11ff568bdfbccdacab944">
+        <dex dex="D:\Java &amp; Andorid\Andorid\اضحك\code\ParseApp\app\build\intermediates\pre-dexed\debug\Parse-1.10.1-1d4546d299556c9893e3da72cb0455f662c74215.jar" />
     </item>
 
 </items>

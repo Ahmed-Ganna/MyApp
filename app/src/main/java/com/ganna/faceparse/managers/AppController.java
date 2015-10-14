@@ -3,7 +3,7 @@ package com.ganna.faceparse.managers;
 import android.app.Application;
 
 import com.facebook.FacebookSdk;
-import com.ganna.faceparse.data.models.Joke;
+import com.ganna.faceparse.data.model.Joke;
 import com.parse.Parse;
 import com.parse.ParseFacebookUtils;
 import com.parse.ParseObject;
@@ -24,6 +24,7 @@ public class AppController extends Application {
 
         // register our custom parse object to Parse
         ParseObject.registerSubclass(Joke.class);
+        Parse.enableLocalDatastore(this);
         Parse.initialize(this, APPLICATION_ID, CLIENT_KEY);
         FacebookSdk.sdkInitialize(getApplicationContext());
         ParseFacebookUtils.initialize(this);

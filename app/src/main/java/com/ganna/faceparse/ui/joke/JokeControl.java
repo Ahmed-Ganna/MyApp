@@ -4,31 +4,29 @@ import com.facebook.AccessToken;
 import com.facebook.FacebookRequestError;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
-import com.ganna.faceparse.Constants.ParseConstants;
+import com.ganna.faceparse.callbacks.controlsCallbacks.LikeCallback;
+import com.ganna.faceparse.callbacks.controlsCallbacks.SaveOfflineCallback;
 import com.ganna.faceparse.callbacks.requestscallbacks.AnalyzeCallback;
-import com.ganna.faceparse.callbacks.requestscallbacks.DeleteCallback;
+import com.ganna.faceparse.callbacks.requestscallbacks.DeleteRequestCallback;
 import com.ganna.faceparse.callbacks.requestscallbacks.IgnoredJokesCallback;
+import com.ganna.faceparse.callbacks.requestscallbacks.NewJokeCallback;
 import com.ganna.faceparse.communications.requests.AnalyzeFriendRequest;
 import com.ganna.faceparse.communications.requests.DeleteFriendsRequests;
-import com.ganna.faceparse.communications.requests.DislikeRequest;
-import com.ganna.faceparse.communications.requests.IgnoredRequest;
-import com.ganna.faceparse.communications.requests.LikeRequest;
-import com.ganna.faceparse.communications.requests.NewJokeRequest;
-import com.ganna.faceparse.communications.requests.SeenRequest;
-import com.ganna.faceparse.communications.requests.SpecificJokeRequest;
-import com.ganna.faceparse.data.models.Joke;
-import com.parse.FindCallback;
+import com.ganna.faceparse.communications.requests.JokeRequests.IgnoredRequest;
+import com.ganna.faceparse.communications.requests.JokeRequests.LikedStatusRequest;
+import com.ganna.faceparse.communications.requests.JokeRequests.NewJokeRequest;
+import com.ganna.faceparse.communications.requests.JokeRequests.SaveOfflineRequest;
+import com.ganna.faceparse.communications.requests.JokeRequests.SavedStatusRequest;
+import com.ganna.faceparse.communications.requests.JokeRequests.SeenRequest;
+import com.ganna.faceparse.communications.requests.JokeRequests.SpecificJokeRequest;
+import com.ganna.faceparse.communications.requests.JokeRequests.UnSaveOfflineRequest;
+import com.ganna.faceparse.data.model.Joke;
 import com.parse.GetCallback;
 import com.parse.ParseException;
-import com.parse.ParseObject;
 import com.parse.ParseUser;
 import com.parse.SaveCallback;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Ahmed on 01/10/2015.
@@ -38,49 +36,67 @@ public class JokeControl {
 
     private IgnoredRequest ignoredJokesRequest;
     private NewJokeRequest newJokeRequest;
-    private LikeRequest likeJokeRequest;
-    private DislikeRequest dislikeRequest;
+    private LikedStatusRequest likeJokeRequest;
     private SeenRequest seenRequest;
     private AnalyzeFriendRequest analyzeFriendRequest;
     private DeleteFriendsRequests deleteFriendsRequests;
     private SpecificJokeRequest specificJokeRequest;
+    private SavedStatusRequest savedStatusRequest;
+    private SaveOfflineRequest saveOfflineRequest;
+    private UnSaveOfflineRequest unSaveOfflineRequest;
+    private ArrayList<String> ignoredIds;
 
     public JokeControl() {
         ignoredJokesRequest = new IgnoredRequest();
         newJokeRequest= new NewJokeRequest();
-        likeJokeRequest=new LikeRequest();
-        dislikeRequest = new DislikeRequest();
+        likeJokeRequest=new LikedStatusRequest();
         seenRequest =new SeenRequest();
         analyzeFriendRequest =new AnalyzeFriendRequest();
         deleteFriendsRequests=new DeleteFriendsRequests();
         specificJokeRequest=new SpecificJokeRequest();
+        savedStatusRequest =new SavedStatusRequest();
+        saveOfflineRequest =new SaveOfflineRequest();
+        unSaveOfflineRequest = new UnSaveOfflineRequest();
+        ignoredIds = new ArrayList<>();
     }
 
     public void getIgnoredJokes(final ParseUser user, final IgnoredJokesCallback callback){
-        ignoredJokesRequest.makeIgnoredRequest(user, new FindCallback<ParseObject>() {
+        ignoredJokesRequest.makeIgnoredRequest(user, callback);
+    }
+
+    public void getNewJoke(final ParseUser user,final com.ganna.faceparse.callbacks.controlsCallbacks.NewJokeCallback callback){
+        getIgnoredJokes(user, new IgnoredJokesCallback() {
             @Override
-            public void done(List<ParseObject> list, ParseException e) {
-                ArrayList<String> ids = new ArrayList<>();
-                for (ParseObject object : list) {
-                    ParseObject jokeObject = object.getParseObject(ParseConstants.JOKE_POINTER);
-                    String jokeId = jokeObject.getObjectId();
-                    ids.add(jokeId);
-                }
-                callback.onCompleted(ids);
+            public void onCompleted(ArrayList<String> ids) {
+                ignoredIds = ids;
+                newJokeRequest.makeNewJokeRequest(ignoredIds, new NewJokeCallback() {
+                    @Override
+                    public void onCompleted(Joke joke, ParseException e) {
+                        if (e == null) {
+                            ignoredIds.add(joke.getObjectId());
+                            setJokeSeen(user, joke);
+                            callback.onCompleted(joke);
+                        } else {
+                            callback.onError(e.getMessage());
+                        }
+                    }
+                });
+
             }
         });
-    }
-
-    public void getNewJoke(ArrayList<String> ignoredIds, final GetCallback<Joke> callback){
-        newJokeRequest.makeNewJokeRequest(ignoredIds, callback);
-    }
-
-    public void interactWithJoke(ParseUser user,Joke joke,boolean isLike, final SaveCallback callback) {
-        if (isLike) {
-            likeJokeRequest.makeLikeRequest(user, joke, callback);
-        }else {
-            dislikeRequest.makeDislikeRequest(user, joke, callback);
         }
+
+    public void changeLikeStatus(ParseUser user,Joke joke,boolean isLike, final LikeCallback callback) {
+            likeJokeRequest.makeLikeStatusRequest(user, joke, isLike, new SaveCallback() {
+                @Override
+                public void done(ParseException e) {
+                    if (e==null){
+                        callback.onCompleted();
+                    }else {
+                        callback.onError(e.getMessage());
+                    }
+                }
+            });
     }
 
     public void setJokeSeen(ParseUser user,Joke joke){
@@ -88,21 +104,10 @@ public class JokeControl {
     }
 
     public void analyzeRequest(AccessToken accessToken,String requestId, final AnalyzeCallback callback){
-        analyzeFriendRequest.makeRequestAnalyst(accessToken, requestId, new GraphRequest.Callback() {
-            @Override
-            public void onCompleted(GraphResponse response) {
-                JSONObject graphObject = response.getJSONObject();
-                try {
-                    String jokeId = graphObject.getString("data");
-                    callback.onCompleted(jokeId);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        analyzeFriendRequest.makeRequestAnalyst(accessToken, requestId, callback);
     }
 
-    public void deleteRequest(AccessToken accessToken,String requestId, final DeleteCallback callback){
+    public void deleteRequest(AccessToken accessToken,String requestId, final DeleteRequestCallback callback){
         deleteFriendsRequests.makeDeleteRequest(accessToken, requestId, new GraphRequest.Callback() {
             @Override
             public void onCompleted(GraphResponse response) {
@@ -114,5 +119,39 @@ public class JokeControl {
 
     public void getSpecificJoke(String jokeId,GetCallback<Joke> callback){
         specificJokeRequest.makeSpecificRequest(jokeId, callback);
+    }
+
+    private void setSavedStatus(ParseUser user,Joke joke,boolean isSave){
+        savedStatusRequest.makeSaveRequest(user, joke, isSave);
+    }
+
+    public void saveJoke(final ParseUser user, final Joke joke, final SaveOfflineCallback callback){
+            saveOfflineRequest.makeSaveOfflineRequest(joke, new SaveOfflineCallback() {
+                @Override
+                public void onCompleted() {
+                    setSavedStatus(user, joke, true);
+                    callback.onCompleted();
+                }
+
+                @Override
+                public void onError(String message) {
+                    callback.onError(message);
+                }
+            });
+    }
+
+    public void unSaveJoke(final ParseUser user, final Joke joke, final SaveOfflineCallback callback){
+        unSaveOfflineRequest.makeRequest(joke, new SaveOfflineCallback() {
+            @Override
+            public void onCompleted() {
+                setSavedStatus(user,joke,false);
+                callback.onCompleted();
+            }
+
+            @Override
+            public void onError(String message) {
+                callback.onError(message);
+            }
+        });
     }
 }

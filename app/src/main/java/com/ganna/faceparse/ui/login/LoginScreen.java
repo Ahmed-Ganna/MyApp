@@ -10,7 +10,7 @@ import android.widget.Button;
 import com.ganna.faceparse.Constants.FBConstants;
 import com.ganna.faceparse.R;
 import com.ganna.faceparse.callbacks.requestscallbacks.UserDetailsCallback;
-import com.ganna.faceparse.ui.joke.JokeScreen;
+import com.ganna.faceparse.managers.ScreenManager;
 import com.parse.LogInCallback;
 import com.parse.ParseException;
 import com.parse.ParseFacebookUtils;
@@ -25,9 +25,9 @@ public class LoginScreen extends AppCompatActivity  {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        initLogin();
+        setContentView(R.layout.activity_login);
         init();
+        initLogin();
     }
 
     private void init() {
@@ -51,8 +51,7 @@ public class LoginScreen extends AppCompatActivity  {
                 user.saveInBackground(new SaveCallback() {
                     @Override
                     public void done(ParseException e) {
-                        startActivity(new Intent(LoginScreen.this, JokeScreen.class));
-                        finish();
+                        ScreenManager.launchJokeScreen(LoginScreen.this);
                     }
                 });
             }
@@ -77,8 +76,7 @@ public class LoginScreen extends AppCompatActivity  {
                     saveNewUserToParse();
                 } else {
                     Log.d("MyApp", "User logged in through Facebook!");
-                    startActivity(new Intent(LoginScreen.this, JokeScreen.class));
-                    finish();
+                    ScreenManager.launchJokeScreen(LoginScreen.this);
                 }
             }
         });

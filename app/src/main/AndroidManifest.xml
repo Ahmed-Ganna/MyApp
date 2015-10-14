@@ -36,6 +36,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.favourite.FavouriteScreen"/>
 
         <provider android:authorities="com.facebook.app.FacebookContentProvider1603174063268872"
             android:name="com.facebook.FacebookContentProvider"

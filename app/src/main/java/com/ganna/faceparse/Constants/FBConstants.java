@@ -13,4 +13,7 @@ public class FBConstants {
         add("email");
         add("user_friends");
     }};
+
+    public static final String USER_FIELDS = "id,name,email";
+    public static final String FIELDS_NAME_SPACE = "fields";
 }

@@ -9,21 +9,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookRequestError;
 import com.facebook.share.model.GameRequestContent;
 import com.facebook.share.widget.GameRequestDialog;
 import com.ganna.faceparse.Constants.FBConstants;
 import com.ganna.faceparse.R;
+import com.ganna.faceparse.callbacks.controlsCallbacks.LikeCallback;
+import com.ganna.faceparse.callbacks.controlsCallbacks.NewJokeCallback;
+import com.ganna.faceparse.callbacks.controlsCallbacks.SaveOfflineCallback;
 import com.ganna.faceparse.callbacks.requestscallbacks.AnalyzeCallback;
-import com.ganna.faceparse.callbacks.requestscallbacks.DeleteCallback;
-import com.ganna.faceparse.callbacks.requestscallbacks.IgnoredJokesCallback;
-import com.ganna.faceparse.data.models.Joke;
-import com.ganna.faceparse.ui.login.LoginScreen;
+import com.ganna.faceparse.data.model.Joke;
+import com.ganna.faceparse.managers.ScreenManager;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout;
 import com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 import com.parse.GetCallback;
@@ -39,9 +40,9 @@ import java.util.Arrays;
 public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefreshListener {
     private ParseUser user;
     private JokeControl controller;
-    private ImageView imageView;
-    private Button like, dislike, share;
-    private TextView likes, dislikes,indicator;
+    private ImageView jokeImgView;
+    private Button likeBtn, dislikeBtn, share,fav,saveBtn;
+    private TextView likes, dislikes,indicator,jokeTv;
     private Joke curJoke;
     private ArrayList<String> ignoredIds;
     private ArrayList<Joke> jokes;
@@ -52,44 +53,38 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_jokes);
+        setContentView(R.layout.activity_joke);
         init();
         if (user!=null){
-            // get new Joke at first time app launch
-            getIgnoredJokes();
+            getNewJoke();
         }else {
-            startActivity(new Intent(this, LoginScreen.class));
-            finish();
+            ScreenManager.launchLoginScreen(this);
         }
 
 
     }
 
-    // get jokes excluded from search
-    private void getIgnoredJokes() {
-        controller.getIgnoredJokes(user, new IgnoredJokesCallback() {
-            @Override
-            public void onCompleted(ArrayList<String> ids) {
-                ignoredIds = ids;
-                getNewJoke();
-            }
-        });
-    }
-
 
     private void getNewJoke() {
-        controller.getNewJoke(ignoredIds, new GetCallback<Joke>() {
+        controller.getNewJoke(user, new NewJokeCallback() {
             @Override
-            public void done(Joke joke, ParseException e) {
-                if (e == null) {
-                    ignoredIds.add(joke.getObjectId());
-                    if (jokes.size()==0) {
+            public void onCompleted(Joke joke) {
+                if (joke != null) {
+                    if (jokes.size() == 0) {
                         setNewJoke(joke);
-                    }else {
+                    } else {
+                        // add to list but do not show it
                         jokes.add(joke);
                         setIndicatorText();
                     }
+                }else {
+
                 }
+            }
+
+            @Override
+            public void onError(String message) {
+
             }
         });
     }
@@ -97,35 +92,46 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
     private void setNewJoke(Joke joke) {
         jokes.add(joke);
         curJoke = joke;
-        Picasso.with(this)
-                .load(joke.getImgUrl())
-                .into(imageView);
+        if (joke.getImg()!=null) {
+            jokeImgView.setVisibility(View.VISIBLE);
+            Picasso.with(this)
+                    .load(joke.getImg().getUrl())
+                    .into(jokeImgView);
+        }else {
+            jokeImgView.setVisibility(View.GONE);
+        }
+        if (joke.getTxt()!=null) {
+            jokeTv.setVisibility(View.VISIBLE);
+            jokeTv.setText(joke.getTxt());
+        }else {
+            jokeTv.setVisibility(View.GONE);
+        }
         setLikesAndDislikes();
         setBtnsAttr();
         setIndicatorText();
-        setJokeSeen();
-    }
-
-
-    private void setJokeSeen() {
-        controller.setJokeSeen(user, curJoke);
     }
 
     private void setBtnsAttr() {
-        int status = curJoke.getStatus();
+        int status = curJoke.getLikeStatus();
         switch (status) {
             case 1:
-                like.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
+                likeBtn.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
+                dislikeBtn.setBackgroundColor(getResources().getColor(android.R.color.white));
                 break;
             case 2:
-                dislike.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
+                dislikeBtn.setBackgroundColor(getResources().getColor(android.R.color.holo_red_dark));
+                likeBtn.setBackgroundColor(getResources().getColor(android.R.color.white));
                 break;
             default:
-                like.setBackgroundColor(getResources().getColor(android.R.color.white));
-                dislike.setBackgroundColor(getResources().getColor(android.R.color.white));
+                likeBtn.setBackgroundColor(getResources().getColor(android.R.color.white));
+                dislikeBtn.setBackgroundColor(getResources().getColor(android.R.color.white));
                 break;
         }
-
+        if (curJoke.isSaved()){
+            saveBtn.setText("unSave");
+        }else {
+            saveBtn.setText("save");
+        }
     }
 
     private void setLikesAndDislikes() {
@@ -136,13 +142,16 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
     private void init() {
         user = ParseUser.getCurrentUser();
         controller = new JokeControl();
-        like = (Button) findViewById(R.id.like);
-        dislike = (Button) findViewById(R.id.dislike);
+        likeBtn = (Button) findViewById(R.id.btn_like);
+        dislikeBtn = (Button) findViewById(R.id.btn_dislike);
         share = (Button) findViewById(R.id.shareFb);
+        saveBtn = (Button) findViewById(R.id.save_btn);
         likes = (TextView) findViewById(R.id.likes_tv);
         dislikes = (TextView) findViewById(R.id.dislikes_tv);
+        fav= (Button) findViewById(R.id.favBtn);
         indicator = (TextView) findViewById(R.id.indicator);
-        imageView = (ImageView) findViewById(R.id.img);
+        jokeImgView = (ImageView) findViewById(R.id.img);
+        jokeTv= (TextView) findViewById(R.id.txt_joke);
         ignoredIds = new ArrayList<>();
         jokes = new ArrayList<>();
         swipyRefreshLayout = (SwipyRefreshLayout) findViewById(R.id.swipe_layout);
@@ -164,20 +173,20 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
             }
         });
 
-        like.setOnClickListener(new View.OnClickListener() {
+        likeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!curJoke.isInteracted()) {
-                    interactWithJoke(true);
+                    setLikeStatus(true);
                 }
             }
         });
 
-        dislike.setOnClickListener(new View.OnClickListener() {
+        dislikeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!curJoke.isInteracted()) {
-                    interactWithJoke(false);
+                    setLikeStatus(false);
                 }
             }
         });
@@ -192,6 +201,24 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
                 }
             }
         });
+
+        saveBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (curJoke.isSaved()){
+                    unSaveJoke();
+                }else {
+                    saveJoke();
+                }
+            }
+        });
+
+        fav.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ScreenManager.launchFavouriteScreen(JokeScreen.this);
+            }
+        });
     }
 
     // Request friends permission from user
@@ -199,9 +226,9 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
         ParseFacebookUtils.linkWithReadPermissionsInBackground(user, this, Arrays.asList(FBConstants.permissions.get(2)), new SaveCallback() {
             @Override
             public void done(ParseException e) {
-                if (e==null){
+                if (e == null) {
                     shareJokeByFb();
-                }else {
+                } else {
 
                 }
             }
@@ -217,20 +244,25 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
         requestDialog.show(content);
     }
 
-    // like - dislikle
-    private void interactWithJoke(boolean isLike) {
+    // like - dislike
+    private void setLikeStatus(boolean isLike) {
         if (isLike) {
-            curJoke.setStatus(1);
+            curJoke.setLikeStatus(1);
         } else {
-            curJoke.setStatus(2);
+            curJoke.setLikeStatus(2);
         }
-        controller.interactWithJoke(user, curJoke, isLike, new SaveCallback() {
+        controller.changeLikeStatus(user, curJoke, isLike, new LikeCallback() {
             @Override
-            public void done(ParseException e) {
+            public void onCompleted() {
                 curJoke.setIsInteracted(true);
                 setLikesAndDislikes();
                 setBtnsAttr();
                 getNewJoke();
+            }
+
+            @Override
+            public void onError(String message) {
+
             }
         });
     }
@@ -255,7 +287,7 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
     }
 
     private void getNestJoke() {
-        Joke nextJoke = jokes.get(jokes.indexOf(curJoke)+1);
+        Joke nextJoke = jokes.get(jokes.indexOf(curJoke) + 1);
         setExistingJoke(nextJoke);
     }
 
@@ -266,10 +298,22 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
 
     // navigate to existing joke [last - next]
     private void setExistingJoke(Joke joke) {
+
         curJoke=joke;
-        Picasso.with(this)
-                .load(joke.getImgUrl())
-                .into(imageView);
+        if (joke.getImg()!=null) {
+            jokeImgView.setVisibility(View.VISIBLE);
+            Picasso.with(this)
+                    .load(joke.getImg().getUrl())
+                    .into(jokeImgView);
+        }else {
+            jokeImgView.setVisibility(View.GONE);
+        }
+        if (joke.getTxt()!=null) {
+            jokeTv.setVisibility(View.VISIBLE);
+            jokeTv.setText(joke.getTxt());
+        }else {
+            jokeTv.setVisibility(View.GONE);
+        }
         setLikesAndDislikes();
         setBtnsAttr();
         setIndicatorText();
@@ -297,8 +341,7 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
 
             }
         }else {
-            startActivity(new Intent(this, LoginScreen.class));
-            finish();
+            ScreenManager.launchLoginScreen(this);
         }
     }
 
@@ -307,28 +350,46 @@ public class JokeScreen extends Activity implements SwipyRefreshLayout.OnRefresh
             @Override
             public void done(Joke joke, ParseException e) {
                 setNewJoke(joke);
-                deleteFriendRequest(requestId);
             }
         });
     }
 
-    // delete App request after consumed
-    private void deleteFriendRequest(String requestId) {
-        controller.deleteRequest(AccessToken.getCurrentAccessToken(), requestId, new DeleteCallback() {
-            @Override
-            public void onCompleted(FacebookRequestError error) {
-                if (error == null) {
-                    Log.d("request", "consumed and deleted");
-                } else {
-                    Log.d("request", "consumed but not deleted");
-                }
-            }
-        });
-    }
 
     private void setIndicatorText(){
         int curIndex = jokes.indexOf(curJoke)+1;
-        indicator.setText(""+curIndex+"/"+jokes.size());
+        indicator.setText("" + curIndex + "/" + jokes.size());
+    }
+
+    private void saveJoke(){
+        controller.saveJoke(user, curJoke, new SaveOfflineCallback() {
+            @Override
+            public void onCompleted() {
+                saveBtn.setText("unSave");
+                curJoke.setIsSaved(true);
+                Toast.makeText(JokeScreen.this, "Save Success",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(String message) {
+
+            }
+        });
+    }
+
+    private void unSaveJoke(){
+        controller.unSaveJoke(ParseUser.getCurrentUser(), curJoke, new SaveOfflineCallback() {
+            @Override
+            public void onCompleted() {
+                saveBtn.setText("save");
+                curJoke.setIsSaved(false);
+                Toast.makeText(JokeScreen.this,"Save Success",Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onError(String message) {
+
+            }
+        });
     }
 
     // handling facebook- Activity life cycle
